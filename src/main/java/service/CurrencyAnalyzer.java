@@ -28,21 +28,21 @@ public class CurrencyAnalyzer {
         }
         return weakest;
     }
-    public Map<String, Double> calculateAvarage(ExchangeRateResponseDate responseDate){
+    public Map<String, Double> calculateAverage(ExchangeRateResponseDate responseDate){
         Map<String, Map<String, Double>> ratesDate = responseDate.getRates();
-        Map<String, Double> avarage = new HashMap<>();
+        Map<String, Double> average = new HashMap<>();
         for (Map.Entry<String, Map<String, Double>> dateEntry : ratesDate.entrySet()) {
             Map<String, Double> ratesForDate = dateEntry.getValue();
 
             for (Map.Entry<String, Double> rateEntry : ratesForDate.entrySet()) {
-                avarage.put(rateEntry.getKey(),avarage.getOrDefault(rateEntry.getKey(), 0.0) + rateEntry.getValue());
+                average.put(rateEntry.getKey(), average.getOrDefault(rateEntry.getKey(), 0.0) + rateEntry.getValue());
             }
         }
 
         int numberOfDays = ratesDate.size();
-        for (Map.Entry<String, Double> entry : avarage.entrySet()) {
-            avarage.put(entry.getKey(), entry.getValue() / numberOfDays);
+        for (Map.Entry<String, Double> entry : average.entrySet()) {
+            average.put(entry.getKey(), entry.getValue() / numberOfDays);
         }
-        return avarage;
+        return average;
     }
 }
