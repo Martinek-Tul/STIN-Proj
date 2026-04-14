@@ -57,4 +57,17 @@ import java.util.Map;
         }
     }
 
+    @GetMapping("/strongest")
+    public Map.Entry<String, Double> getStrongest(
+            @RequestParam String base,
+            @RequestParam List<String> symbols) {
+        try {
+            UserSettings settings = new UserSettings(base, symbols);
+            ExchangeRateResponse response = exchangeRateService.getCurrentRates(settings);
+            return currencyAnalyzer.findStrongest(response);
+        } catch (Exception e) {
+            loggingService.logError("Chyba v /api/strongest", e);
+            throw e;
+        }
+    }
 }
