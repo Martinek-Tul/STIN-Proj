@@ -30,9 +30,9 @@ import java.util.Map;
     @GetMapping("/rates")
     public ExchangeRateResponse getRates(
             @RequestParam String base,
-            @RequestParam List<String> currencies){
+            @RequestParam List<String> symbols){
         try{
-            UserSettings settings = new UserSettings(base, currencies);
+            UserSettings settings = new UserSettings(base, symbols);
             return exchangeRateService.getCurrentRates(settings);
         } catch (Exception e) {
             loggingService.logError("Chyba v /api/rates ",e);
@@ -43,12 +43,12 @@ import java.util.Map;
     @GetMapping("/date")
     public Map<String, Double> getRatesWithDates(
             @RequestParam String base,
-            @RequestParam List<String> currencies,
+            @RequestParam List<String> symbols,
             @RequestParam String dateFrom,
             @RequestParam String dateTo
     ){
         try{
-            UserSettings settings = new UserSettings(base, currencies);
+            UserSettings settings = new UserSettings(base, symbols);
             ExchangeRateResponseDate responseDate = exchangeRateService.getCurrentRatesDates(settings, dateFrom, dateTo);
             return currencyAnalyzer.calculateAverage(responseDate);
         } catch (Exception e) {
@@ -86,10 +86,22 @@ import java.util.Map;
     }
 
     @GetMapping("/settings")
-    public UserSettings getSettings() throws Exception {
+    public UserSettings getSettings(){
         try{
             return userSettingsService.loadSettings();
         } catch (Exception e) {
+            loggingService.logError("Chyba v /api/settings", e);
+            throw e;
+        }
+    }
+
+    @GetMapping("/settings/save")
+    public void saveSettings(@RequestParam String base,
+                             @RequestParam List<String> symbols){
+        try {
+            UserSettings settings = new UserSettings(base, symbols);
+            userSettingsService.saveSettings(settings);
+        }catch (Exception e){
             loggingService.logError("Chyba v /api/settings", e);
             throw e;
         }
