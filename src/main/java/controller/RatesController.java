@@ -14,6 +14,7 @@ import service.LoggingService;
 import service.UserSettingsService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
     @RequestMapping("/api")
@@ -35,6 +36,23 @@ import java.util.List;
             return exchangeRateService.getCurrentRates(settings);
         } catch (Exception e) {
             loggingService.logError("Chyba v /api/rates ",e);
+            throw e;
+        }
+    }
+
+    @GetMapping("/date")
+    public Map<String, Double> getRatesWithDates(
+            @RequestParam String base,
+            @RequestParam List<String> currencies,
+            @RequestParam String dateFrom,
+            @RequestParam String dateTo
+    ){
+        try{
+            UserSettings settings = new UserSettings(base, currencies);
+            ExchangeRateResponseDate responseDate = exchangeRateService.getCurrentRatesDates(settings, dateFrom, dateTo);
+            return currencyAnalyzer.calculateAverage(responseDate);
+        } catch (Exception e) {
+            loggingService.logError("Chyba v /api/date ",e);
             throw e;
         }
     }
