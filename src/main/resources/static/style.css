@@ -1,0 +1,32 @@
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #f4f5f7; color: #1a1a2e; }
+nav { background: #fff; border-bottom: 1px solid #ddd; padding: 0 2rem; height: 52px; display: flex; align-items: center; justify-content: space-between; }
+nav span { font-weight: 600; }
+nav div { display: flex; gap: 10px; }
+nav button { padding: 6px 14px; border: 1px solid #ddd; border-radius: 6px; background: none; cursor: pointer; font-size: 13px; }
+.container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+.card { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+.card h3 { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+label { font-size: 13px; color: #555; display: block; margin-bottom: 4px; }
+select, input[type=date] { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+.date-row { display: flex; gap: 8px; align-items: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip { font-size: 12px; padding: 5px 11px; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9; cursor: pointer; user-select: none; }
+.chip.on { background: #e8f0fb; border-color: #4a90d9; color: #1a56a0; font-weight: 500; }
+.btn { padding: 10px 20px; font-size: 14px; font-weight: 500; border: none; border-radius: 6px; cursor: pointer; }
+.btn-primary { background: #1a1a2e; color: #fff; width: 100%; margin-top: 1rem; }
+.btn-save { background: #f4f5f7; border: 1px solid #ddd; color: #333; font-size: 13px; padding: 6px 14px; border-radius: 6px; cursor: pointer; margin-top: 8px; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1rem; }
+.metric { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 1rem 1.25rem; }
+.metric-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+.metric-value { font-size: 24px; font-weight: 600; }
+.metric-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+.metric.s .metric-value { color: #2e7d32; }
+.metric.w .metric-value { color: #c62828; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 8px; border-bottom: 1px solid #eee; color: #888; font-weight: 500; }
+td { padding: 9px 8px; border-bottom: 1px solid #f0f0f0; }
+.error { background: #fff8f8; border: 1px solid #f5c6c6; border-radius: 8px; padding: 1rem; color: #b71c1c; font-size: 14px; display: none; margin-bottom: 1rem; }
+#results { display: none; }
