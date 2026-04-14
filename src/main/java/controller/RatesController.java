@@ -84,4 +84,14 @@ import java.util.Map;
             throw e;
         }
     }
+
+    @GetMapping("/settings")
+    public UserSettings getSettings() throws Exception {
+        try{
+            return userSettingsService.loadSettings();
+        } catch (Exception e) {
+            loggingService.logError("Chyba v /api/settings", e);
+            throw e;
+        }
+    }
 }
