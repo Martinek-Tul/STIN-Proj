@@ -70,4 +70,18 @@ import java.util.Map;
             throw e;
         }
     }
+
+    @GetMapping("/weakest")
+    public Map.Entry<String, Double> getWeakest(
+            @RequestParam String base,
+            @RequestParam List<String> symbols){
+        try{
+            UserSettings settings = new UserSettings(base,symbols);
+            ExchangeRateResponse response = exchangeRateService.getCurrentRates(settings);
+            return currencyAnalyzer.findWeakest(response);
+        }catch (Exception e){
+            loggingService.logError("Cyhba v /api/weakest", e);
+            throw e;
+        }
+    }
 }
