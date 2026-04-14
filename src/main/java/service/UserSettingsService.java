@@ -34,5 +34,17 @@ public class UserSettingsService {
         }
     }
 
-
+    public void saveSettings(UserSettings settings){
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.write(settings.getBaseCurrency());
+            writer.newLine();
+            writer.write(String.join(",", settings.getSelectedCurrencies()));
+            writer.close();
+            loggingService.logInfo("Nastavení bylo uloženo");
+        } catch (IOException e) {
+            loggingService.logError("Chyba při ukládání nastavení",e);
+            throw new RuntimeException(e);
+        }
+    }
 }
