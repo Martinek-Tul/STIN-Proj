@@ -29,7 +29,6 @@ async function loadSettings() {
         const res = await fetch("/api/settings");
         if (!res.ok) return;
         const s = await res.json();
-        // Podpora pro různé názvy polí v Javě (base vs baseCurrency)
         const baseVal = s.base || s.baseCurrency;
         if (baseVal) document.getElementById("base").value = baseVal;
 
