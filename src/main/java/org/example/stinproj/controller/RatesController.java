@@ -1,17 +1,17 @@
-package controller;
+package org.example.stinproj.controller;
 
-import model.ExchangeRateResponse;
-import model.ExchangeRateResponseDate;
-import model.UserSettings;
+import org.example.stinproj.model.ExchangeRateResponse;
+import org.example.stinproj.model.ExchangeRateResponseDate;
+import org.example.stinproj.model.UserSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import service.CurrencyAnalyzer;
-import service.ExchangeRateService;
-import service.LoggingService;
-import service.UserSettingsService;
+import org.example.stinproj.service.CurrencyAnalyzer;
+import org.example.stinproj.service.ExchangeRateService;
+import org.example.stinproj.service.LoggingService;
+import org.example.stinproj.service.UserSettingsService;
 
 import java.util.List;
 import java.util.Map;
