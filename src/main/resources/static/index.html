@@ -10,22 +10,26 @@
 <body>
 
 <nav>
-    <span>Currency Analyzer</span>
-    <div>
-        <span style="font-size:13px;color:#555;">admin</span>
-        <button onclick="location.href='/logout'">Odhlásit</button>
+    <span class="logo" data-i18n="title">Currency Analyzer</span>
+    <div class="nav-controls">
+        <select id="langSwitch" class="lang-select" onchange="changeLanguage(this.value)">
+            <option value="cs">CZ</option>
+            <option value="en">EN</option>
+        </select>
+        <span class="user-info">admin</span>
+        <button class="btn-logout" data-i18n="logout">Odhlásit</button>
     </div>
 </nav>
 
 <div class="container">
 
-    <div class="error" id="errorBox">⚠ Nepodařilo se načíst data z API. Zkuste to znovu.</div>
+    <div class="error" id="errorBox"></div>
 
     <div class="card">
-        <h3>Nastavení</h3>
+        <h3 data-i18n="settings">Nastavení</h3>
         <div class="row">
             <div>
-                <label>Základní měna</label>
+                <label data-i18n="baseCurrency">Základní měna</label>
                 <select id="base">
                     <option>AUD</option><option>CAD</option><option>CHF</option>
                     <option>CNY</option><option>CZK</option><option>DKK</option>
@@ -38,7 +42,7 @@
                 </select>
             </div>
             <div>
-                <label>Časové období</label>
+                <label data-i18n="dateRange">Časové období</label>
                 <div class="date-row">
                     <input type="date" id="dateFrom" value="2026-01-01">
                     <span>–</span>
@@ -47,37 +51,42 @@
             </div>
         </div>
 
-        <label>Sledované měny <span style="color:#aaa;font-size:12px;">(klikni pro výběr)</span></label>
+        <label data-i18n="trackedCurrencies">Sledované měny</label>
         <div class="chips" id="chips"></div>
 
         <div style="display:flex;gap:10px;margin-top:1rem;">
-            <button class="btn btn-primary" style="flex:1;" onclick="loadData()">Načíst data</button>
-            <button class="btn-save" onclick="saveSettings()">Uložit nastavení</button>
+            <button class="btn btn-primary" style="flex:1;" onclick="loadData()" data-i18n="loadBtn">Načíst data</button>
+            <button class="btn-save" onclick="saveSettings()" data-i18n="saveBtn">Uložit nastavení</button>
         </div>
     </div>
 
     <div id="results">
         <div class="metrics">
             <div class="metric s">
-                <div class="metric-label">Nejsilnější měna</div>
+                <div class="metric-label" data-i18n="strongest">Nejsilnější měna</div>
                 <div class="metric-value" id="strongest">–</div>
                 <div class="metric-sub" id="strongestRate"></div>
             </div>
             <div class="metric w">
-                <div class="metric-label">Nejslabší měna</div>
+                <div class="metric-label" data-i18n="weakest">Nejslabší měna</div>
                 <div class="metric-value" id="weakest">–</div>
                 <div class="metric-sub" id="weakestRate"></div>
             </div>
             <div class="metric">
-                <div class="metric-label">Průměr za období</div>
+                <div class="metric-label" data-i18n="average">Průměr za období</div>
                 <div class="metric-value" id="average">–</div>
             </div>
         </div>
 
         <div class="card">
-            <h3>Kurzy</h3>
+            <h3 data-i18n="tableTitle">Kurzy</h3>
             <table>
-                <thead><tr><th>Měna</th><th>Kurz vůči základní</th></tr></thead>
+                <thead>
+                <tr>
+                    <th data-i18n="tableCurrency">Měna</th>
+                    <th data-i18n="tableRate">Kurz vůči základní</th>
+                </tr>
+                </thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
