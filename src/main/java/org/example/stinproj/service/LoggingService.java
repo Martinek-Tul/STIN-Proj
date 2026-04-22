@@ -1,4 +1,4 @@
-package service;
+package org.example.stinproj.service;
 
 import org.springframework.stereotype.Service;
 

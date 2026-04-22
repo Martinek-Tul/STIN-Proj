@@ -9,5 +9,4 @@ public class StinProjApplication {
     public static void main(String[] args) {
         SpringApplication.run(StinProjApplication.class, args);
     }
-
 }

@@ -1,4 +1,4 @@
-package model;
+package org.example.stinproj.model;
 
 import lombok.Getter;
 import lombok.Setter;

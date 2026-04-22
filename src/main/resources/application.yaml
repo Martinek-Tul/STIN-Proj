@@ -1,3 +1,8 @@
 spring:
   application:
     name: STIN-Proj
+  security:
+     user:
+       name: admin
+       password: heslo123
+

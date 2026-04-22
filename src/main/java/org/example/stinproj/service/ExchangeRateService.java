@@ -1,8 +1,8 @@
-package service;
+package org.example.stinproj.service;
 
-import model.ExchangeRateResponse;
-import model.ExchangeRateResponseDate;
-import model.UserSettings;
+import org.example.stinproj.model.ExchangeRateResponse;
+import org.example.stinproj.model.ExchangeRateResponseDate;
+import org.example.stinproj.model.UserSettings;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
