@@ -7,26 +7,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CurrencyAnalyzer {
-    public Map.Entry<String, Double> findStrongest(ExchangeRateResponse response){
-        Map<String, Double> rates = response.getRates();
-        Map.Entry<String, Double> strongest = null;
-        for (Map.Entry<String, Double> entry : rates.entrySet()){
-            if(strongest == null || strongest.getValue() < entry.getValue()){
-                strongest = entry;
-            }
-        }
-        return strongest;
-    }
-
     public Map.Entry<String, Double> findWeakest(ExchangeRateResponse response){
         Map<String, Double> rates = response.getRates();
         Map.Entry<String, Double> weakest = null;
         for (Map.Entry<String, Double> entry : rates.entrySet()){
-            if(weakest == null || weakest.getValue() > entry.getValue()){
+            if(weakest == null || weakest.getValue() < entry.getValue()){
                 weakest = entry;
             }
         }
         return weakest;
+    }
+
+    public Map.Entry<String, Double> findStrongest(ExchangeRateResponse response){
+        Map<String, Double> rates = response.getRates();
+        Map.Entry<String, Double> strongest = null;
+        for (Map.Entry<String, Double> entry : rates.entrySet()){
+            if(strongest == null || strongest.getValue() > entry.getValue()){
+                strongest = entry;
+            }
+        }
+        return strongest;
     }
     public Map<String, Double> calculateAverage(ExchangeRateResponseDate responseDate){
         Map<String, Map<String, Double>> ratesDate = responseDate.getRates();
