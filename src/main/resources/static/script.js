@@ -18,11 +18,13 @@ const translations = {
         tableTitle: "Kurzy",
         tableCurrency: "Měna",
         tableRate: "Kurz vůči základní",
+        tableDate: "Průměr za dobu",
         saveSuccess: "Nastavení uloženo!",
         saveError: "Chyba při ukládání.",
         selectError: "Vyber alespoň jednu měnu.",
         apiError: "Nepodařilo se načíst data z API.",
-        rateLabel: "kurz"
+        rateLabel: "kurz",
+        loadError: "Nepodařilo se načíst uložené nastavení."
     },
     en: {
         title: "Currency Analyzer",
@@ -39,33 +41,40 @@ const translations = {
         tableTitle: "Exchange Rates",
         tableCurrency: "Currency",
         tableRate: "Rate against base",
+        tableDate: "Avarage for period",
         saveSuccess: "Settings saved!",
         saveError: "Error while saving.",
         selectError: "Select at least one currency.",
         apiError: "Unable to fetch data from API.",
-        rateLabel: "rate"
+        rateLabel: "rate",
+        loadError: "Error while loading saved settings."
     }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-    const chipsEl = document.getElementById("chips");
-    if (chipsEl) {
-        chipsEl.innerHTML = "";
-        CURRENCIES.forEach(c => {
-            const el = document.createElement("div");
-            el.className = "chip";
-            el.textContent = c;
-            el.onclick = () => {
-                if (selected.has(c)) {
-                    selected.delete(c);
-                    el.classList.remove("on");
+document.addEventListener("DOMContentLoaded", function() {
+    const chipsDiv = document.getElementById("chips");
+
+    if (chipsDiv) {
+        for (let i = 0; i < CURRENCIES.length; i++) {
+            let currency = CURRENCIES[i];
+
+            let chip = document.createElement("div");
+            chip.className = "chip";
+            chip.id = "chip-" + currency;
+            chip.textContent = currency;
+
+            chip.onclick = function() {
+                if (selected.has(currency)) {
+                    selected.delete(currency);
+                    chip.classList.remove("on");
                 } else {
-                    selected.add(c);
-                    el.classList.add("on");
+                    selected.add(currency);
+                    chip.classList.add("on");
                 }
             };
-            chipsEl.appendChild(el);
-        });
+
+            chipsDiv.appendChild(chip);
+        }
     }
 
     const savedLang = localStorage.getItem("preferredLang") || "cs";
@@ -77,11 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function changeLanguage(lang) {
     currentLang = lang;
     localStorage.setItem("preferredLang", lang);
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        if (translations[lang][key]) {
-            el.textContent = translations[lang][key];
-        }
+    document.querySelectorAll("[data-i18n]").forEach(element => {
+        element.textContent = translations[lang][element.dataset.i18n] || element.textContent;
     });
 }
 
@@ -90,95 +96,99 @@ async function loadSettings() {
         const res = await fetch("/api/settings");
         if (!res.ok) return;
         const s = await res.json();
-
-        const baseVal = s.baseCurrency;
-        if (baseVal) document.getElementById("base").value = baseVal;
-
-        const syms = s.selectedCurrencies || [];
-        syms.forEach(c => {
-            selected.add(c);
-            document.querySelectorAll(".chip").forEach(el => {
-                if (el.textContent === c) el.classList.add("on");
-            });
-        });
+        if (s.baseCurrency) {
+            document.getElementById("base").value = s.baseCurrency;
+        }
+        const savedCurr = s.selectedCurrencies || [];
+        for (let i = 0; i < savedCurr.length; i++) {
+            let curr = savedCurr[i];
+            selected.add(curr);
+            let chip = document.getElementById("chip-" + curr);
+            if (chip) {
+                chip.classList.add("on");
+            }
+        }
     } catch(e) {
-        console.log("Použito výchozí nastavení (soubor nenalezen).");
+        console.log(translations[currentLang].loadError);
+        const errorBox = document.getElementById("errorBox");
+        errorBox.textContent = translations[currentLang].loadError;
+        errorBox.style.display = "block";
     }
 }
 
 async function saveSettings() {
     const base = document.getElementById("base").value;
-    const symbols = [...selected].join(",");
-    if (!symbols) return alert(translations[currentLang].selectError);
-
+    const symbols = Array.from(selected).join(",");
+    if (symbols === "") {
+        alert(translations[currentLang].selectError);
+        return;
+    }
     try {
-        await fetch(`/api/settings/save?base=${base}&symbols=${symbols}`);
-        alert(translations[currentLang].saveSuccess);
+        const response = await fetch(`/api/settings/save?base=${base}&symbols=${symbols}`);
+        if (response.ok) {
+            alert(translations[currentLang].saveSuccess);
+        } else {
+            alert(translations[currentLang].saveError);
+        }
     } catch(e) {
         alert(translations[currentLang].saveError);
     }
 }
 
 async function loadData() {
-    if (selected.size === 0) {
-        alert(translations[currentLang].selectError);
-        return;
-    }
-
     const base = document.getElementById("base").value;
     const from = document.getElementById("dateFrom").value;
     const to = document.getElementById("dateTo").value;
-    const symbols = [...selected].join(",");
+    const helpArr = Array.from(selected);
+    const symbols = helpArr.join(",");
 
-    document.getElementById("errorBox").style.display = "none";
-    const resultsDiv = document.getElementById("results");
+    if (!symbols) return alert(translations[currentLang].selectError);
 
     try {
-        const [ratesRes, strongRes, weakRes, avgRes] = await Promise.all([
+        const responses = await Promise.all([
             fetch(`/api/rates?base=${base}&symbols=${symbols}`),
             fetch(`/api/strongest?base=${base}&symbols=${symbols}`),
             fetch(`/api/weakest?base=${base}&symbols=${symbols}`),
             fetch(`/api/date?base=${base}&symbols=${symbols}&dateFrom=${from}&dateTo=${to}`)
         ]);
 
-        const ratesData = await ratesRes.json();
-        const strongData = await strongRes.json();
-        const weakData = await weakRes.json();
-        const avgsData = await avgRes.json();
+        const [ratesData, strongData, weakData, avgsData] = await Promise.all(responses.map(r => r.json()));
 
-        const rateLabel = translations[currentLang].rateLabel;
+        const fillBox = (id, rateId, data) => {
+            const [currency] = Object.keys(data);
+            if (currency) {
+                document.getElementById(id).textContent = currency;
+                document.getElementById(rateId).textContent = translations[currentLang].rateLabel + ": " + data[currency].toFixed(5);            }
+        };
 
-        const sKey = Object.keys(strongData)[0];
-        if (sKey) {
-            document.getElementById("strongest").textContent = sKey;
-            document.getElementById("strongestRate").textContent = `${rateLabel}: ${parseFloat(strongData[sKey]).toFixed(5)}`;
-        }
+        fillBox("strongest", "strongestRate", strongData);
+        fillBox("weakest", "weakestRate", weakData);
 
-        const wKey = Object.keys(weakData)[0];
-        if (wKey) {
-            document.getElementById("weakest").textContent = wKey;
-            document.getElementById("weakestRate").textContent = `${rateLabel}: ${parseFloat(weakData[wKey]).toFixed(5)}`;
-        }
-
-        const tbody = document.getElementById("tableBody");
-        tbody.innerHTML = "";
         const actualRates = ratesData.rates || {};
-        Object.entries(actualRates).forEach(([c, r]) => {
-            tbody.innerHTML += `<tr><td><strong>${c}</strong></td><td>${parseFloat(r).toFixed(5)}</td></tr>`;
-        });
+        const tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = "";
+        const keys = Object.keys(actualRates);
+        for (let i = 0; i < keys.length; i++) {
+            let curr = keys[i];
+            let rate = actualRates[curr];
+            let avg = avgsData[curr] || 0;
+            let row = `
+                <tr>
+                    <td><strong>${curr}</strong></td>
+                    <td>${rate.toFixed(5)}</td>
+                    <td class="text-info">${avg.toFixed(5)}</td>
+                </tr>
+            `;
 
-        const avgVals = Object.values(avgsData);
-        document.getElementById("average").textContent = avgVals.length > 0
-            ? (avgVals.reduce((a, b) => a + b, 0) / avgVals.length).toFixed(5)
-            : "–";
+            tableBody.innerHTML += row;
+        }
 
-        resultsDiv.style.display = "block";
+        document.getElementById("average").textContent = from && to ? `${from} - ${to}` : "–";
+        document.getElementById("results").style.display = "block";
+        document.getElementById("errorBox").style.display = "none";
 
     } catch(e) {
-        console.error("API Error:", e);
-        const errBox = document.getElementById("errorBox");
-        errBox.textContent = translations[currentLang].apiError;
-        errBox.style.display = "block";
-        resultsDiv.style.display = "none";
+        document.getElementById("errorBox").textContent = translations[currentLang].apiError;
+        document.getElementById("errorBox").style.display = "block";
     }
 }
