@@ -9,9 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,26 +24,23 @@ jobs:
         run: chmod +x mvnw
 
       - name: Build and Test
-        
         run: ./mvnw clean verify
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
-          path: backend/target/site/jacoco/
+          path: target/site/jacoco/
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          
-          path: backend/target/*.jar
+          path: target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development')
     steps:
       - name: Download artifact
@@ -63,4 +57,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'CurrencyAnalyzator1'
-          package: '.' 
+          package: '*.jar'
