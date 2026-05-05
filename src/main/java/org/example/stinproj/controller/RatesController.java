@@ -49,6 +49,10 @@ import java.util.Map;
             @RequestParam String dateTo
     ){
         try{
+            if (dateFrom.compareTo(dateTo) > 0) {
+                loggingService.logError("Chyba aplikace: dateFrom (" + dateFrom + ") je větší než dateTo (" + dateTo + ")");
+                throw new IllegalArgumentException("Datum 'od' musí být dřívější nebo rovno datu 'do'.");
+            }
             UserSettings settings = new UserSettings(base, symbols);
             ExchangeRateResponseDate responseDate = exchangeRateService.getCurrentRatesDates(settings, dateFrom, dateTo);
             return currencyAnalyzer.calculateAverage(responseDate);

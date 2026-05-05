@@ -24,7 +24,8 @@ const translations = {
         selectError: "Vyber alespoň jednu měnu.",
         apiError: "Nepodařilo se načíst data z API.",
         rateLabel: "kurz",
-        loadError: "Nepodařilo se načíst uložené nastavení."
+        loadError: "Nepodařilo se načíst uložené nastavení.",
+        dateErr: "Datum Od musí dříve než Do"
     },
     en: {
         title: "Currency Analyzer",
@@ -47,7 +48,8 @@ const translations = {
         selectError: "Select at least one currency.",
         apiError: "Unable to fetch data from API.",
         rateLabel: "rate",
-        loadError: "Error while loading saved settings."
+        loadError: "Error while loading saved settings.",
+        dateErr: "Date From has be earlier then To"
     }
 };
 
@@ -144,6 +146,11 @@ async function loadData() {
 
     if (!symbols) return alert(translations[currentLang].selectError);
 
+    if(from > to){
+        document.getElementById("errorBox").textContent = translations[currentLang].dateErr;
+        document.getElementById("errorBox").style.display = "block";
+        return;
+    }
     try {
         const responses = await Promise.all([
             fetch(`/api/rates?base=${base}&symbols=${symbols}`),
